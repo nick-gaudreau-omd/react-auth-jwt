@@ -2,6 +2,8 @@ import * as React from 'react';
 import IAuthContainerState from './IAuthContainerState';
 import { LoginForm } from '../components/LoginForm';
 
+const api_url = "http://localhost:3000";
+
 export class Login extends React.Component<{}, IAuthContainerState> {
 
   constructor(props:any) {
@@ -44,8 +46,43 @@ export class Login extends React.Component<{}, IAuthContainerState> {
     // prevent default action. in this case, action is the form submission event
     event.preventDefault();
 
-    console.log('email:', this.state.user.email);
-    console.log('password:', this.state.user.password);
+    // create a string for an HTTP body message
+    const email = encodeURIComponent(this.state.user.email);
+    const password = encodeURIComponent(this.state.user.password);
+    const formData = `email=${email}&password=${password}`;
+
+    const endpoint = `${api_url}/auth/login`;
+
+    fetch(endpoint, {
+      method: 'POST', 
+      body: formData, 
+      headers:{
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    }).then(res => {
+        if(res.ok) {
+          // change the component-container state
+          this.setState({
+            errors: {}
+          });          
+          console.log('The form is valid');
+        } else {
+          res.json().then( (error) => {            
+            const errors = error.errors ? error.errors : {};
+            errors.summary = error.message;
+
+            this.setState({
+              errors
+            });
+          });
+        }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
+
+    // console.log('email:', this.state.user.email);
+    // console.log('password:', this.state.user.password);
   }
 
   /**
