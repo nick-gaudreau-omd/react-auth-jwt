@@ -6,7 +6,7 @@ import { MuiThemeProvider } from 'material-ui/styles';
 const HomePage = () => (
   <MuiThemeProvider>
   <Card className="container">
-    <CardTitle title="React Test Authentication App" subtitle="Using JWT, Bcrypt, Material UI." />
+    <CardTitle title="React Authentication App" subtitle="Using JWT, Bcrypt, Material UI." />
   </Card>
   </MuiThemeProvider>
 );
