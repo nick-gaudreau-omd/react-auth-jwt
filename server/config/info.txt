@@ -1,0 +1,7 @@
+In index.json
+
+{
+  "dbUri": "mongodb://localhost:27017/react_auth_jwt_bcrypt"
+}
+
+Mongo will create the DB if it doesn't exists (i.e: react_auth_jwt_bcrypt)
