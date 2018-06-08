@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { NavLink } from 'react-router-dom';
+import Auth from '../modules/Auth';
 
 export const Nav = () => (
   <div>
@@ -8,10 +9,7 @@ export const Nav = () => (
         <NavLink to="/">React App</NavLink>
       </div>
 
-      <div className="top-bar-right">
-        <NavLink to="/login">Log in</NavLink>
-        <NavLink to="/signup">Sign up</NavLink>
-      </div>
+      {Auth.isUserAuthenticated() ? (<div className="top-bar-right"><NavLink to="/logout">Log out</NavLink></div>) : (<div className="top-bar-right"><NavLink to="/login">Log in</NavLink><NavLink to="/signup">Sign up</NavLink></div>)}
 
     </div>
   </div>

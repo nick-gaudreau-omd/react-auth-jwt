@@ -1,16 +1,18 @@
 import * as React from 'react';
 import IAuthContainerState from './IAuthContainerState';
 import { LoginForm } from '../components/LoginForm';
+import Auth from '../modules/Auth';
+import { Constants } from '../Constants';
+import { IContainerProps } from './IContainerProps';
 
-const api_url = "http://localhost:3000";
-
-export class Login extends React.Component<{}, IAuthContainerState> {
+export class Login extends React.Component<IContainerProps, IAuthContainerState> {
 
   constructor(props:any) {
     super(props);
 
     this.state = {
       errors: {},
+      successMessage : '',
       user: {
         email: '',
         name: '',
@@ -20,6 +22,18 @@ export class Login extends React.Component<{}, IAuthContainerState> {
 
     this.processForm = this.processForm.bind(this);
     this.changeUser = this.changeUser.bind(this);
+  }
+
+  componentDidMount(){
+    const storedMessage = localStorage.getItem('successMessage');
+    let message = '';
+
+    if (storedMessage) {
+      message = storedMessage;
+      localStorage.removeItem('successMessage');
+    }
+
+    this.setState({successMessage: message});
   }
 
   /**
@@ -51,7 +65,7 @@ export class Login extends React.Component<{}, IAuthContainerState> {
     const password = encodeURIComponent(this.state.user.password);
     const formData = `email=${email}&password=${password}`;
 
-    const endpoint = `${api_url}/auth/login`;
+    const endpoint = `${Constants.api_url}/auth/login`;
 
     fetch(endpoint, {
       method: 'POST', 
@@ -60,22 +74,27 @@ export class Login extends React.Component<{}, IAuthContainerState> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }).then(res => {
+      res.json().then( (body) => {         
+        
         if(res.ok) {
           // change the component-container state
           this.setState({
             errors: {}
-          });          
-          console.log('The form is valid');
-        } else {
-          res.json().then( (error) => {            
-            const errors = error.errors ? error.errors : {};
-            errors.summary = error.message;
+          });      
+          // save the token
+          Auth.authenticateUser(body.token);
 
-            this.setState({
-              errors
-            });
-          });
+          const { history } = this.props;
+          history.push('/');
+          console.log('The login form is valid');
+        } else {                      
+          const errors = body.errors ? body.errors : {};
+          errors.summary = body.message;
+          this.setState({
+            errors
+          });          
         }
+      });
     })
     .catch(error => {
       console.error('Error:', error);

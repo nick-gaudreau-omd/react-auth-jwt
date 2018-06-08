@@ -1,0 +1,4 @@
+{
+  "dbUri": "mongodb://localhost:27017/react_auth_jwt_bcrypt", 
+  "jwtSecret": "6F4C9545184B907D6B92A6960204A5DAAD05FD6CB2C54327D23E7E5A7425484B"
+}
