@@ -4,7 +4,7 @@ const passport = require('passport');
 const config = require('./config');
 
 // connect to the database and load models
-require('./server/models').connect(config.dbUri);
+require('./models').connect(config.dbUri);
 
 const app = express();
 // tell the app to look for static files in these directories
@@ -15,6 +15,7 @@ var allowCrossDomain = function(req, res, next) {
     res.header('Access-Control-Allow-Origin', '*');
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
     res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Headers', 'Authorization');
     next();
 }
 app.use(allowCrossDomain);
@@ -26,19 +27,19 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(passport.initialize());
 
 // load passport strategies
-const localSignupStrategy = require('./server/passport/local-signup');
-const localLoginStrategy = require('./server/passport/local-login');
+const localSignupStrategy = require('./passport/local-signup');
+const localLoginStrategy = require('./passport/local-login');
 passport.use('local-signup', localSignupStrategy);
 passport.use('local-login', localLoginStrategy);
 
 // pass the authenticaion checker middleware
-const authCheckMiddleware = require('./server/middleware/auth-check');
+const authCheckMiddleware = require('./middleware/auth-check');
 app.use('/api', authCheckMiddleware); // anytime a request to api
 
 // routes
 const authRoutes = require('./routes/auth');
 app.use('/auth', authRoutes);
-const apiRoutes = require('./server/routes/api');
+const apiRoutes = require('./routes/api');
 app.use('/api', apiRoutes);
 
 // GET test
