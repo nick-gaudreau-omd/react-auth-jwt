@@ -1,10 +1,10 @@
 import * as React from 'react';
 import IAuthContainerState from './IAuthContainerState';
 import { SignUpForm } from '../components/SignUpForm';
+import { Constants } from '../Constants';
+import { IContainerProps } from './IContainerProps';
 
-const api_url = "http://localhost:3000";
-
-export class SignUp extends React.Component<{}, IAuthContainerState> {
+export class SignUp extends React.Component<IContainerProps, IAuthContainerState> {
 
   constructor(props:any) {
     super(props);
@@ -52,7 +52,7 @@ export class SignUp extends React.Component<{}, IAuthContainerState> {
     const password = encodeURIComponent(this.state.user.password);
     const formData = `name=${name}&email=${email}&password=${password}`;
 
-    const endpoint = `${api_url}/auth/signup`;
+    const endpoint = `${Constants.api_url}/auth/signup`;
 
     fetch(endpoint, {
       method: 'POST', 
@@ -61,22 +61,30 @@ export class SignUp extends React.Component<{}, IAuthContainerState> {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     }).then(res => {
+
+      res.json().then( (body) => {         
+        
         if(res.ok) {
           // change the component-container state
           this.setState({
             errors: {}
-          });          
+          });      
+          // set a message
+          localStorage.setItem('successMessage', body.message);
+          
+          const { history } = this.props;
+          history.push('/login'); 
+          
           console.log('The form is valid');
-        } else {
-          res.json().then( (error) => {            
-            const errors = error.errors ? error.errors : {};
-            errors.summary = error.message;
-
-            this.setState({
-              errors
-            });
-          });
+        } else {                      
+          const errors = body.errors ? body.errors : {};
+          errors.summary = body.message;
+          this.setState({
+            errors
+          });          
         }
+      });
+      
     })
     .catch(error => {
       console.error('Error:', error);

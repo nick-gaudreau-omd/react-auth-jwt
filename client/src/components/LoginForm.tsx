@@ -13,6 +13,7 @@ export const LoginForm: React.SFC<IAuthFormProps> = (props) => {
         <form action="/" onSubmit={props.onSubmit}>
           <h2 className="card-heading">Login</h2>
 
+          {props.successMessage && <p className="success-message">{props.successMessage}</p>}
           {props.errors.summary && <p className="error-message">{props.errors.summary}</p>}
 
           <div className="field-line">
