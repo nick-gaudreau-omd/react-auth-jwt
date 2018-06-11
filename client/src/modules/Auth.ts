@@ -5,7 +5,7 @@ class Auth {
    *
    * @param {string} token
    */
-  static authenticateUser(token) {
+  static authenticateUser(token:any) {
     localStorage.setItem('token', token);
   }
 
